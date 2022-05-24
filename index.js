@@ -26,7 +26,7 @@ const verifyJWT = (req, res, next) => {
     }
     // Have a token but check if it is right or not
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
 
         // if error is occur means token is right but dont have permission to access 
         if (err) {
@@ -53,6 +53,18 @@ const run = async () => {
         const allOrdersCollection = client.db('manufacturerWebsite').collection('orders');
 
 
+        const verifyAdmin = async (req, res, next) => {
+            const requesterEmail = req.decoded.email;
+            const requesterInfo = await allUsersCollection.findOne({ email: requesterEmail })
+            if (requesterInfo.role === 'admin') {
+                next();
+            }
+            else {
+                return res.status(403).send({
+                    message: 'Forbidden access'
+                })
+            }
+        }
 
         // ALL GET Method
         // get all products
@@ -65,7 +77,7 @@ const run = async () => {
 
 
         // get single user info by email
-        app.get('/user/:email', async (req, res) => {
+        app.get('/user/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const query = { email };
             const result = await allUsersCollection.findOne(query);
