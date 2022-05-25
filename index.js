@@ -110,6 +110,14 @@ const run = async () => {
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
         })
+        // get All Orders by email - Customer
+        app.get('/orders/:email', async (req, res) => {
+            const customerEmail = req.params.email;
+            const query = { customerEmail };
+            const result = await allOrdersCollection.find(query).toArray();
+            res.send(result)
+
+        })
 
 
 
