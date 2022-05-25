@@ -111,10 +111,18 @@ const run = async () => {
             res.send({ admin: isAdmin })
         })
         // get All Orders by email - Customer
-        app.get('/orders/:email', async (req, res) => {
+        app.get('/orders/:email', verifyJWT, async (req, res) => {
             const customerEmail = req.params.email;
             const query = { customerEmail };
             const result = await allOrdersCollection.find(query).toArray();
+            res.send(result)
+
+        })
+        // get single Order by id
+        app.get('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await allOrdersCollection.findOne(query);
             res.send(result)
 
         })
