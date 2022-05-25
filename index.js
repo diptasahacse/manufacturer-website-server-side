@@ -1,9 +1,11 @@
 const express = require('express')
 const jwt = require('jsonwebtoken');
 const cors = require('cors')
+require('dotenv').config();
+// This is your test secret API key.
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
-require('dotenv').config()
 
 const port = process.env.PORT || 5000;
 
@@ -181,6 +183,25 @@ const run = async () => {
             const result = await allUsersCollection.updateOne(filter, userDoc);
             return res.send(result)
         })
+
+
+        // For Payment
+        app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+            const toolInfo = req.body;
+            const price = toolInfo.price;
+            const amount = price * 100;
+
+            // Create a PaymentIntent with the order amount and currency
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount,
+                currency: "usd",
+                "payment_method_types": ["card"]
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
     }
     finally {
         // await client.close();
