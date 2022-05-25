@@ -75,6 +75,14 @@ const run = async () => {
 
         })
 
+        // get all products
+        app.get('/user', async (req, res) => {
+            const query = {};
+            const productsArray = await allUsersCollection.find(query).toArray()
+            res.send(productsArray)
+
+        })
+
 
         // get single user info by email
         app.get('/user/:email', verifyJWT, async (req, res) => {
@@ -84,6 +92,14 @@ const run = async () => {
 
             res.send(result)
 
+        })
+
+        // GET admin status
+        app.get('/admin/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const user = await allUsersCollection.findOne({ email: email })
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin })
         })
 
 
