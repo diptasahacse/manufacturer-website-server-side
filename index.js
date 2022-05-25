@@ -124,13 +124,24 @@ const run = async () => {
         })
 
         // Create Admin
-        app.put('/admin/createAdmin/:email', async (req, res) => {
-            const email = req.query.email;
+        app.put('/admin/createadmin/:email', verifyJWT, verifyAdmin, async (req, res) => {
+            const email = req.params.email;
+            // console.log(email)
             const filter = { email };
             const userDoc = {
                 $set: { role: 'admin' },
             };
-            const result = await allUsersCollection(filter, userDoc);
+            const result = await allUsersCollection.updateOne(filter, userDoc);
+            return res.send(result)
+        })
+        // Remove Admin
+        app.put('/admin/removeadmin/:email', verifyJWT, verifyAdmin, async (req, res) => {
+            const email = req.params.email;
+            const filter = { email };
+            const userDoc = {
+                $unset: { role: '' },
+            };
+            const result = await allUsersCollection.updateOne(filter, userDoc);
             return res.send(result)
         })
     }
