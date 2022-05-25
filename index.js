@@ -53,6 +53,7 @@ const run = async () => {
         const productsCollection = client.db('manufacturerWebsite').collection('products');
         const allUsersCollection = client.db('manufacturerWebsite').collection('users');
         const allOrdersCollection = client.db('manufacturerWebsite').collection('orders');
+        const allPaymentsCollection = client.db('manufacturerWebsite').collection('payments');
 
 
         const verifyAdmin = async (req, res, next) => {
@@ -140,6 +141,24 @@ const run = async () => {
             res.send(result)
 
         })
+        // For Payment
+        app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+            const toolInfo = req.body;
+            const price = toolInfo.price;
+            const amount = price * 100;
+            // console.log(amount)
+
+            // Create a PaymentIntent with the order amount and currency
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount,
+                currency: "usd",
+                "payment_method_types": ["card"]
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
 
 
 
@@ -184,24 +203,26 @@ const run = async () => {
             return res.send(result)
         })
 
+        // Patch 
+        app.patch('/orders/:id', async (req, res) => {
+            const orderId = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(orderId) };
+            const updatedDoc = {
+                $set: {
+                    paymentStatus: true,
+                    transactionId: payment.transactionId
+                }
+            }
 
-        // For Payment
-        app.post("/create-payment-intent", verifyJWT, async (req, res) => {
-            const toolInfo = req.body;
-            const price = toolInfo.price;
-            const amount = price * 100;
+            const orderUpdatedResult = await allOrdersCollection.updateOne(filter, updatedDoc);
+            const result = await allPaymentsCollection.insertOne(payment);
+            res.send(orderUpdatedResult)
 
-            // Create a PaymentIntent with the order amount and currency
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount,
-                currency: "usd",
-                "payment_method_types": ["card"]
-            });
+        })
 
-            res.send({
-                clientSecret: paymentIntent.client_secret,
-            });
-        });
+
+
     }
     finally {
         // await client.close();
