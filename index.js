@@ -122,6 +122,17 @@ const run = async () => {
             res.send({ result, token })
 
         })
+
+        // Create Admin
+        app.put('/admin/createAdmin/:email', async (req, res) => {
+            const email = req.query.email;
+            const filter = { email };
+            const userDoc = {
+                $set: { role: 'admin' },
+            };
+            const result = await allUsersCollection(filter, userDoc);
+            return res.send(result)
+        })
     }
     finally {
         // await client.close();
