@@ -101,7 +101,7 @@ const run = async () => {
             res.send(result)
 
         })
-        
+
 
         // GET admin status
         app.get('/admin/:email', verifyJWT, async (req, res) => {
@@ -109,6 +109,18 @@ const run = async () => {
             const user = await allUsersCollection.findOne({ email: email })
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
+        })
+
+
+
+        // All Post Method
+        // Post a order
+        app.post('/orders', async (req, res) => {
+            const orderData = req.body;
+            // console.log(orderData)
+            const result = await allOrdersCollection.insertOne(orderData);
+            res.send(result)
+
         })
 
 
