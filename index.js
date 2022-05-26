@@ -203,6 +203,21 @@ const run = async () => {
             res.send({ result, token })
 
         })
+        // Put profile picture
+
+        app.put('/user/picture/:id', async (req, res) => {
+            const userId = req.params.id;
+            // console.log(email)
+            const imgData = req.body
+
+
+            const filter = { _id: ObjectId(userId) };
+            const userDoc = {
+                $set: { img: imgData.img },
+            };
+            const result = await allUsersCollection.updateOne(filter, userDoc);
+            return res.send(result)
+        })
 
         // Create Admin
         app.put('/admin/createadmin/:email', verifyJWT, verifyAdmin, async (req, res) => {
