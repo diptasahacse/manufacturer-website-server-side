@@ -113,6 +113,13 @@ const run = async () => {
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
         })
+        // Get all orders
+        app.get('/orders', async (req, res) => {
+            const result = await allOrdersCollection.find().toArray();
+            res.send(result)
+
+        })
+        
         // get All Orders by email - Customer
         app.get('/orders/:email', verifyJWT, async (req, res) => {
             const customerEmail = req.params.email;
