@@ -132,6 +132,7 @@ const run = async () => {
 
 
 
+
         // All Post Method
         // Post a order
         app.post('/orders', async (req, res) => {
@@ -141,6 +142,28 @@ const run = async () => {
             res.send(result)
 
         })
+
+        // patch a review
+        app.patch('/review/:id', async (req, res) => {
+            const orderId = req.params.id;
+            const query = { _id: ObjectId(orderId) };
+            const review = req.body;
+
+            const updatedDoc = {
+                $set: {
+                    review
+                }
+            }
+            const updatedOrder = await allOrdersCollection.updateOne(query, updatedDoc)
+            res.send(updatedOrder)
+
+
+        })
+
+
+
+
+
         // For Payment
         app.post("/create-payment-intent", verifyJWT, async (req, res) => {
             const toolInfo = req.body;
