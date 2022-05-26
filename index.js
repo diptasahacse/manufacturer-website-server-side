@@ -203,17 +203,23 @@ const run = async () => {
             res.send({ result, token })
 
         })
-        // Put profile picture
 
-        app.put('/user/picture/:id', async (req, res) => {
+
+        // Put user profile info
+        app.put('/user/info/:id', async (req, res) => {
             const userId = req.params.id;
             // console.log(email)
-            const imgData = req.body
-
-
+            const userInfo = req.body
             const filter = { _id: ObjectId(userId) };
             const userDoc = {
-                $set: { img: imgData.img },
+                $set: {
+                    img: userInfo.img,
+                    city: userInfo.city,
+                    education: userInfo.education,
+                    linkedin: userInfo.linkedin,
+                    phone: userInfo.phone,
+
+                },
             };
             const result = await allUsersCollection.updateOne(filter, userDoc);
             return res.send(result)
