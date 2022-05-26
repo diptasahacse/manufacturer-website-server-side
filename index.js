@@ -223,6 +223,17 @@ const run = async () => {
 
 
 
+        // DELETE
+        app.delete('/orders/:id', async (req, res) => {
+            const orderId = req.params.id;
+            const query = { _id: ObjectId(orderId) }
+            const result = await allOrdersCollection.deleteOne(query);
+            res.send(result);
+
+        })
+
+
+
     }
     finally {
         // await client.close();
