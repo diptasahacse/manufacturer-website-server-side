@@ -130,18 +130,6 @@ const run = async () => {
 
         })
 
-        // GET - get all order by email
-        app.get('/order/:email', async (req, res) => {
-            const customerEmail = req.params.email;
-            const query = { customerEmail };
-
-            const allOrders = await allOrdersCollection.find(query).toArray();
-
-            res.send(allOrders)
-
-        })
-
-
 
 
         // All Post Method
@@ -158,7 +146,8 @@ const run = async () => {
         app.patch('/review/:id', async (req, res) => {
             const orderId = req.params.id;
             const query = { _id: ObjectId(orderId) };
-            const review = req.body;
+            const { review } = req.body;
+            // console.log(orderId)
 
             const updatedDoc = {
                 $set: {
