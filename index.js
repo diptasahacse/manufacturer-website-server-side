@@ -184,6 +184,15 @@ const run = async () => {
         });
 
 
+        // POST a product
+        app.post('/products', async (req, res) => {
+            const productBody = req.body;
+            const result = await productsCollection.insertOne(productBody)
+            res.send(result)
+
+        })
+
+
 
 
 
@@ -209,7 +218,8 @@ const run = async () => {
         app.put('/user/info/:id', async (req, res) => {
             const userId = req.params.id;
             // console.log(email)
-            const userInfo = req.body
+            const userInfo = req.body;
+            console.log(userInfo)
             const filter = { _id: ObjectId(userId) };
             const userDoc = {
                 $set: {
