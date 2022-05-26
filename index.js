@@ -130,6 +130,17 @@ const run = async () => {
 
         })
 
+        // GET - get all order by email
+        app.get('/order/:email', async (req, res) => {
+            const customerEmail = req.params.email;
+            const query = { customerEmail };
+
+            const allOrders = await allOrdersCollection.find(query).toArray();
+
+            res.send(allOrders)
+
+        })
+
 
 
 
