@@ -282,11 +282,6 @@ const run = async () => {
             const productResult = await productsCollection.updateOne(filterForProduct, productDoc);
             return res.send({ orderResult, productResult })
         })
-
-
-
-
-
         // Patch 
         app.patch('/orders/:id', async (req, res) => {
             const orderId = req.params.id;
