@@ -119,7 +119,7 @@ const run = async () => {
             res.send(result)
 
         })
-        
+
         // get All Orders by email - Customer
         app.get('/orders/:email', verifyJWT, async (req, res) => {
             const customerEmail = req.params.email;
@@ -253,7 +253,7 @@ const run = async () => {
             const result = await allUsersCollection.updateOne(filter, userDoc);
             return res.send(result)
         })
-        // Remove Admin
+        // Remove Admin status
         app.put('/admin/removeadmin/:email', verifyJWT, verifyAdmin, async (req, res) => {
             const email = req.params.email;
             const filter = { email };
@@ -263,6 +263,29 @@ const run = async () => {
             const result = await allUsersCollection.updateOne(filter, userDoc);
             return res.send(result)
         })
+        // Change Payment status pending to shipped by id and change available quantity by product id
+        app.put('/orders/payment/:id', verifyJWT, verifyAdmin, async (req, res) => {
+            const orderId = req.params.id;
+            const { productId, updateAvailableQuantity } = req.body;
+            const filterForOrder = { _id: ObjectId(orderId) };
+            const filterForProduct = { _id: ObjectId(productId) };
+            console.log(req.body, orderId)
+            const orderDoc = {
+                $set: { paymentStatus: 'shipped' },
+            };
+            const productDoc = {
+                $set: { availableQuantity: updateAvailableQuantity },
+            };
+            const orderResult = await allOrdersCollection.updateOne(filterForOrder, orderDoc);
+
+
+            const productResult = await productsCollection.updateOne(filterForProduct, productDoc);
+            return res.send({ orderResult, productResult })
+        })
+
+
+
+
 
         // Patch 
         app.patch('/orders/:id', async (req, res) => {
@@ -271,7 +294,7 @@ const run = async () => {
             const filter = { _id: ObjectId(orderId) };
             const updatedDoc = {
                 $set: {
-                    paymentStatus: true,
+                    paymentStatus: "pending",
                     transactionId: payment.transactionId
                 }
             }
