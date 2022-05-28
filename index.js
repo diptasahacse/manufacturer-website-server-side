@@ -136,6 +136,16 @@ const run = async () => {
             res.send(result)
 
         })
+        // get Business summery
+        app.get('/businesssummery', async (req, res) => {
+
+
+            const totalUser = await allUsersCollection.find().toArray();
+            const totalTools = await productsCollection.find().toArray();
+            const totalOrders = await allOrdersCollection.find().toArray();
+            res.send({ totalUser: totalUser.length, totalTools: totalTools.length, totalOrders })
+
+        })
 
 
 
